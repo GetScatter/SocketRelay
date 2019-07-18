@@ -2,7 +2,9 @@ const http = require('http');
 const https = require('https');
 const WebSocket = require('ws');
 const wallets = require('./wallets');
-require('isomorphic-fetch')
+require('isomorphic-fetch');
+const ecc = require('eosjs-ecc');
+const sha256 = x => ecc.sha256(x);
 
 const walletConnections = {};
 const appConnections = {};
@@ -15,6 +17,7 @@ const emit = async (socket, path, data) => {
 
 const socketHandler = socket => {
 	const ip = socket._socket.address().address;
+	let device;
 
 	let origin = null, isWallet = false;
 	const socketId = Math.round(Math.random() * 999999999).toString();
@@ -27,13 +30,14 @@ const socketHandler = socket => {
 	socket.on('error', async request => console.log('error', request));
 
 	// Different clients send different message types for disconnect (ws vs socket.io)
-	const closeConnection = () => isWallet  ? delete walletConnections[ip] : delete appConnections[origin+socketId];
+	const closeConnection = () => isWallet  ? delete walletConnections[sha256(ip+device)] : delete appConnections[origin+socketId];
 	socket.on('close',      closeConnection);
 	socket.on('disconnect', closeConnection);
 
 	socket.on('message', msg => {
 		if(msg.indexOf('42/scatter') === -1) return false;
 		let [type, request] = JSON.parse(msg.replace('42/scatter,', ''));
+		device = request.device;
 
 		/************************************************/
 		/*                  WALLETS                     */
@@ -41,7 +45,7 @@ const socketHandler = socket => {
 
 		if(type === 'wallet'){
 			isWallet = true;
-			walletConnections[ip] = socket;
+			walletConnections[sha256(ip+device)] = socket;
 			return emit(socket, 'linked', {id:request.id, result:true});
 		}
 
@@ -77,7 +81,7 @@ const socketHandler = socket => {
 
 		new Promise((resolve, reject) => {
 			queuedMessages[request.id] = resolve;
-			return emit(walletConnections[ip], type, request);
+			return emit(walletConnections[sha256(ip+device)], type, request);
 		}).then(result => {
 			emit(socket, result.type, result.data || false)
 		});
