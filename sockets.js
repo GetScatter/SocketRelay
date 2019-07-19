@@ -105,13 +105,13 @@ const getCerts = async () => {
 };
 
 const createSocket = async () => {
-	const certs = await getCerts();
-	const server = https.createServer(certs);
-	// const server = http.createServer();
+	// const certs = await getCerts();
+	// const server = https.createServer(certs);
+	const server = http.createServer();
 	const websocket = new WebSocket.Server({ server });
 	websocket.on('connection', socketHandler)
-	// server.listen(50005);
-	server.listen(50006);
+	server.listen(50005);
+	// server.listen(50006);
 
 	return websocket
 }
