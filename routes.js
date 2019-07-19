@@ -17,53 +17,11 @@ const returnResult = (data, req, res) => {
 };
 
 
-
-
-/************************************************/
-/*                                              */
-/*                    WALLETS                   */
-/*                                              */
-/************************************************/
-
-routes.get('/wallet/connect', async (req, res) => {
-	wallets[req.ip] = uuidv4();
-	returnResult(wallets[req.ip], req, res);
-});
-
-routes.get('/wallet/disconnect', async (req, res) => {
-	delete wallets[req.ip];
-	returnResult(true, req, res);
-});
-
-
-
-
-
-/************************************************/
-/*                                              */
-/*                     APPS                     */
-/*                                              */
-/************************************************/
-
 routes.get('/app/connect', async (req, res) => {
 	const uuid = wallets[req.ip];
 	if(!uuid) return returnResult(false, req, res);
 	returnResult(uuid, req, res);
 });
-
-routes.get('/app/socket/', async (req, res) => {
-	const uuid = wallets[req.ip];
-	returnResult(wallets[req.ip], req, res);
-});
-
-
-
-
-/************************************************/
-/*                                              */
-/*                  SOCKETS                     */
-/*                                              */
-/************************************************/
 
 const createSocket = require('./sockets');
 const socket = createSocket();
