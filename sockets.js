@@ -45,6 +45,7 @@ const socketHandler = socket => {
 
 		if(type === 'wallet'){
 			isWallet = true;
+			console.log('wallet', sha256(ip+device), ip, device);
 			walletConnections[sha256(ip+device)] = socket;
 			return emit(socket, 'linked', {id:request.id, result:true});
 		}
