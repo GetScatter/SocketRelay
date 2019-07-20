@@ -31,8 +31,8 @@ const socketHandler = socket => {
 	socket.on('error', async request => console.log('error', request));
 
 	// Different clients send different message types for disconnect (ws vs socket.io)
-	const closeConnection = () => {
-		console.log('disconnected', isWallet ? 'wallet' : 'app', sha256(ip+device));
+	const closeConnection = e => {
+		console.log('disconnected', isWallet ? 'wallet' : 'app', sha256(ip+device), e);
 		if(isWallet){
 
 			delete walletConnections[sha256(ip+device)];
