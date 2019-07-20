@@ -1,10 +1,10 @@
 const { Router } = require('express');
 const uuidv4 = require('uuid').v4;
 const ecc = require('eosjs-ecc');
+const sha256 = x => ecc.sha256(x);
 
 const routes = Router();
 const wallets = require('./wallets');
-wallets['::1'] = "38ca7d6b-e112-47a8-b130-478f401ffbaa"
 
 // const proofKey = config('PROOF_KEY');
 const returnResult = (data, req, res) => {
@@ -17,8 +17,9 @@ const returnResult = (data, req, res) => {
 };
 
 
-routes.get('/app/connect', async (req, res) => {
-	const uuid = wallets[req.ip];
+routes.get('/app/connect/:device', async (req, res) => {
+	const {device} = req.query;
+	const uuid = wallets[sha256(req.ip+device)];
 	if(!uuid) return returnResult(false, req, res);
 	returnResult(uuid, req, res);
 });
