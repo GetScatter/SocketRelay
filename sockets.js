@@ -1,12 +1,11 @@
 const http = require('http');
 const https = require('https');
 const WebSocket = require('ws');
-const wallets = require('./wallets');
+const walletConnections = require('./wallets');
 require('isomorphic-fetch');
 const ecc = require('eosjs-ecc');
 const sha256 = x => ecc.sha256(x);
 
-const walletConnections = {};
 const appConnections = {};
 const queuedMessages = {};
 
