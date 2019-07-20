@@ -1,11 +1,13 @@
 const http = require('http');
 const https = require('https');
 const WebSocket = require('ws');
-const walletConnections = require('./wallets');
+const wallets = require('./wallets');
 require('isomorphic-fetch');
 const ecc = require('eosjs-ecc');
 const sha256 = x => ecc.sha256(x);
+const uuidv4 = require('uuid').v4;
 
+const walletConnections = {};
 const appConnections = {};
 const queuedMessages = {};
 
@@ -29,7 +31,14 @@ const socketHandler = socket => {
 	socket.on('error', async request => console.log('error', request));
 
 	// Different clients send different message types for disconnect (ws vs socket.io)
-	const closeConnection = () => isWallet  ? delete walletConnections[sha256(ip+device)] : delete appConnections[origin+socketId];
+	const closeConnection = () => {
+		if(isWallet){
+			delete walletConnections[sha256(ip+device)];
+			delete wallets[sha256(ip+device)];
+		} else {
+			delete appConnections[origin+socketId]
+		}
+	};
 	socket.on('close',      closeConnection);
 	socket.on('disconnect', closeConnection);
 
@@ -45,6 +54,7 @@ const socketHandler = socket => {
 		if(type === 'wallet'){
 			isWallet = true;
 			console.log('wallet', sha256(ip+device), ip, device);
+			wallets[sha256(ip+device)] = uuidv4();
 			walletConnections[sha256(ip+device)] = socket;
 			return emit(socket, 'linked', {id:request.id, result:true});
 		}
