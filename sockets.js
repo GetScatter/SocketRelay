@@ -16,9 +16,8 @@ const emit = async (socket, path, data) => {
 	socket.send('42/scatter,' + JSON.stringify([path, data ? data : false]))
 }
 
-const socketHandler = socket => {
-	const ip = socket._socket.address().address;
-	console.log('socket', socket._socket.address());
+const socketHandler = (socket, req) => {
+	const ip = req.headers['x-forwarded-for'];
 	let device;
 
 	let origin = null, isWallet = false;
