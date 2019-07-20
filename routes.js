@@ -19,8 +19,8 @@ const returnResult = (data, req, res) => {
 
 routes.get('/app/connect/:device', async (req, res) => {
 	const {device} = req.params;
-	console.log('connected', sha256(req.ip+device), req.ip, device);
-	const uuid = wallets[sha256(req.ip+device)];
+	console.log('connected', sha256(req.ipData+device), req.ipData, device);
+	const uuid = wallets[sha256(req.ipData+device)];
 	if(!uuid) return returnResult(false, req, res);
 	returnResult(uuid, req, res);
 });

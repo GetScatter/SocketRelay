@@ -9,7 +9,8 @@ const app = express();
 app.disable('x-powered-by');
 
 app.use ((req, res, next) => {
-	req.ip = req.headers['x-forwarded-for'];
+	req.ipData = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
+
 	next();
 });
 
