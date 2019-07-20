@@ -18,6 +18,7 @@ const emit = async (socket, path, data) => {
 
 const socketHandler = socket => {
 	const ip = socket._socket.address().address;
+	console.log('socket', socket._socket.address());
 	let device;
 
 	let origin = null, isWallet = false;
