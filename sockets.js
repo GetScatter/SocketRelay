@@ -30,6 +30,10 @@ const socketHandler = (socket, req) => {
 	// Just logging errors for debugging purposes (dev only)
 	socket.on('error', async request => console.log('error', request));
 
+	let interval = setInterval(() => {
+		socket.send(`42/scatter,["ping"]`);
+	}, 10000);
+
 	// Different clients send different message types for disconnect (ws vs socket.io)
 	const closeConnection = e => {
 		console.log('disconnected', isWallet ? 'wallet' : 'app', sha256(ip+device), e);
@@ -43,6 +47,8 @@ const socketHandler = (socket, req) => {
 	};
 	socket.on('close',      closeConnection);
 	socket.on('disconnect', closeConnection);
+
+
 
 	socket.on('message', msg => {
 		if(msg.indexOf('42/scatter') === -1) return false;
@@ -65,6 +71,9 @@ const socketHandler = (socket, req) => {
 			if(!queuedMessages[request.id]) return;
 			return queuedMessages[request.id](request);
 		}
+
+		if(type === 'pong') return;
+		if(type === 'ping') return socket.send(`42/scatter,["pong"]`);
 
 
 
