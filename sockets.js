@@ -53,7 +53,7 @@ const socketHandler = (socket, req) => {
 	socket.on('message', msg => {
 		if(msg.indexOf('42/scatter') === -1) return false;
 		let [type, request] = JSON.parse(msg.replace('42/scatter,', ''));
-		device = request.device;
+		if(request) device = request.device;
 
 		/************************************************/
 		/*                  WALLETS                     */
