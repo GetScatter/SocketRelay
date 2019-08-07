@@ -36,6 +36,7 @@ const socketHandler = (socket, req) => {
 
 	// Different clients send different message types for disconnect (ws vs socket.io)
 	const closeConnection = e => {
+		clearInterval(interval);
 		console.log('disconnected', isWallet ? 'wallet' : 'app', sha256(ip+device), e);
 		if(isWallet){
 
